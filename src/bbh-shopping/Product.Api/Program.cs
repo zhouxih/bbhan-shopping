@@ -1,4 +1,9 @@
 using Carter;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
+using Product.Api.Routes.CreateProduct;
+using SharedLib.CQRS.CQRS_AOP;
 
 namespace Product.Api
 {
@@ -12,8 +17,23 @@ namespace Product.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            var thisAssembly = typeof(Program).Assembly;
+            builder.Services.AddValidatorsFromAssembly(thisAssembly);
+
+
+            //注册MediatR服务
+            builder.Services.AddMediatR(cfg => {
+                cfg.RegisterServicesFromAssembly(thisAssembly);
+                //记录日志
+                cfg.AddOpenBehavior(typeof(ValidateAOP<,>));
+                //处理参数验证 
+            });
+
             //添加Carter服务 (自定义路由)
             builder.Services.AddCarter();
+
+
+
 
             var app = builder.Build();
 
