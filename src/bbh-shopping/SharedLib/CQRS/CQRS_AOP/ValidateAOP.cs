@@ -4,12 +4,12 @@ using MediatR;
 
 namespace SharedLib.CQRS.CQRS_AOP
 {
-    public class ValidateAOP<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    public class ValidateAop<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : ICommand<TResponse>
     {
 
         private readonly IEnumerable<IValidator<TRequest>> validators;
-        public ValidateAOP(IEnumerable<IValidator<TRequest>> validators) 
+        public ValidateAop(IEnumerable<IValidator<TRequest>> validators) 
         {
             this.validators = validators;
         }

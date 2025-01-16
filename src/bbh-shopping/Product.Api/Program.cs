@@ -24,9 +24,11 @@ namespace Product.Api
             //注册MediatR服务
             builder.Services.AddMediatR(cfg => {
                 cfg.RegisterServicesFromAssembly(thisAssembly);
-                //记录日志
-                cfg.AddOpenBehavior(typeof(ValidateAOP<,>));
                 //处理参数验证 
+                cfg.AddOpenBehavior(typeof(ValidateAop<,>));
+                //记录日志
+                cfg.AddOpenBehavior(typeof(LogAop<,>));
+
             });
 
             //添加Carter服务 (自定义路由)
