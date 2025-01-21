@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Mapster;
+using Product.Api.Services;
 using SharedLib.CQRS;
 
 
@@ -22,18 +24,21 @@ namespace Product.Api.Routes.CreateProduct
 
     public class CreateProductHandler : ICommandHandler<CreateProductCommand, CreateProductCommandResponse>
     {
-        public CreateProductHandler() 
+        private readonly IProductService productService;
+        public CreateProductHandler(IProductService productService) 
         {
-
+            this.productService = productService;
         }
 
         public async Task<CreateProductCommandResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             //保存数据库
-            Guid id = Guid.NewGuid();
+            var product = request.Adapt<Product.Api.Models.ShopProduct>();
+            product.Id = Guid.NewGuid();
+            await this.productService.AddProduct(product);
 
             //返回值
-            return new CreateProductCommandResponse(id);
+            return new CreateProductCommandResponse(product.Id);
         }
     }
 }

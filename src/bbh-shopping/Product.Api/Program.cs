@@ -1,9 +1,14 @@
 using Carter;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HealthChecks.UI.Client;
+using Marten;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Product.Api.Routes.CreateProduct;
+using Product.Api.Services;
 using SharedLib.CQRS.CQRS_AOP;
+using SharedLib.ExceptionHandler;
 
 namespace Product.Api
 {
@@ -16,10 +21,11 @@ namespace Product.Api
             // 添加 Swagger 服务
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<IProductService,ProductService>();
 
             var thisAssembly = typeof(Program).Assembly;
             builder.Services.AddValidatorsFromAssembly(thisAssembly);
-
+            builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
             //注册MediatR服务
             builder.Services.AddMediatR(cfg => {
@@ -34,6 +40,16 @@ namespace Product.Api
             //添加Carter服务 (自定义路由)
             builder.Services.AddCarter();
 
+            //注册martin服务
+            builder.Services.AddMarten(options =>
+            {
+                options.Connection(builder.Configuration.GetConnectionString("ProductDB")!);
+            }).UseLightweightSessions();
+
+            //添加健康检查
+
+            builder.Services.AddHealthChecks()
+                .AddNpgSql(builder.Configuration.GetConnectionString("ProductDB")!);
 
 
 
@@ -43,11 +59,15 @@ namespace Product.Api
             app.UseSwagger();
             app.UseSwaggerUI();
 
+            app.UseExceptionHandler(options => { });
+            app.UseHealthChecks("/health",
+             new HealthCheckOptions
+             {
+                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+             });
             // 使用 Carter 路由
             app.MapCarter();
-
-            app.MapGet("/", () => "Hello World!");
-
+         
 
             app.Run();
         }

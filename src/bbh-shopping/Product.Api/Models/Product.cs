@@ -3,7 +3,7 @@
     /// <summary>
     /// 商品模型
     /// </summary>
-    public class Product
+    public class ShopProduct
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = default!;
