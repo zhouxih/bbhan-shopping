@@ -13,7 +13,7 @@ namespace Discount.GRPC
             // Add services to the container.
             var dbString = builder.Configuration.GetConnectionString("DataBase");
             builder.Services.AddGrpc();
-            builder.Services.AddDbContext<DiscountDBContext>(o=>o.UseSqlite("dbString"));
+            builder.Services.AddDbContext<DiscountDBContext>(o=>o.UseSqlite(dbString));
 
             var app = builder.Build();
 
