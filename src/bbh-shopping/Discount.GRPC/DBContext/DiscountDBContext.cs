@@ -6,7 +6,7 @@ namespace Discount.GRPC.DBContext
     public class DiscountDBContext : DbContext
     {
 
-        public DbSet<Coupon> Coupones { get; set; } 
+        public DbSet<Coupon> Coupons { get; set; } 
         public DiscountDBContext(DbContextOptions options) : base(options)
         {
         }
